@@ -2,9 +2,11 @@
 <link rel="import" href="../materializecss-styles/materializecss-styles.html">
 <link rel="import" href="../hax-body-behaviors/hax-body-behaviors.html">
 <link rel="import" href="../schema-behaviors/schema-behaviors.html">
+<link rel="import" href="../paper-icon-button/paper-icon-button.html" />
+<link rel="import" href="../paper-tooltip/paper-tooltip.html"/>
 <!--
 `a11y-collapse`
-A LRN element
+An accessible expand collapse.
 
 @demo demo/index.html
 
@@ -19,23 +21,155 @@ A LRN element
     <style>
       :host {
         display: block;
+        border: 1px solid var(--a11y-collapse-border-color, #ddd);
+        border-radius: 0.25em;
+        background-color: var(--a11y-collapse-background-color, white);
+        color: var(--a11y-collapse-color, black);
+        @apply --ally-collapse;
+      }
+      :host #heading {
+        display: flex;
+        justify-content: stretch;
+        align-items: center;
+        padding: 0em var(--ally-collapse-horizontal-padding, 1em);
+        font-weight: bold;
+        background-color: var(--a11y-collapse-heading-background-color, var(--a11y-collapse-background-color, white));
+        @apply --ally-collapse-heading;
+      }
+      :host #text {
+        flex-grow: 1;
+        @apply --ally-collapse-heading-text;
+      }
+      :host #expand {
+        color: var(--a11y-collapse-button-color, black);
+        transition: transform 0.5s;
+        @apply --ally-collapse-button;
+      }
+      :host #expand[rotated] {
+        transform: rotate(-90deg);
+        @apply --ally-collapse-button-rotated;
+      }
+      :host #collapse {
+        padding: 0em var(--ally-collapse-horizontal-padding, 1em);
+        border-top: 0px solid var(--a11y-collapse-border-color, #ddd);
+        transition: all 0.5s ease-in-out;
+        background-color: var(--a11y-collapse-content-background-color, var(--a11y-collapse-background-color, white));
+        @apply --ally-collapse-content;
+      }
+      :host[expanded] #collapse {
+        padding: var(--ally-collapse-vertical-padding, 1em) var(--ally-collapse-horizontal-padding, 1em);
+        border-top: 1px solid var(--a11y-collapse-border-color, #ddd);
+        @apply --ally-collapse-content-expanded;
+      }
+      :host #content {
+        transition: all 0.2s ease-in-out 0.2s;
+        @apply --ally-collapse-content-inner;
+      }
+      :host:not([expanded]) #collapse,
+      :host:not([expanded]) #content {
+        max-height: 0;
+        overflow: hidden;
       }
     </style>
-    <h2>[[title]]</h2>
+    <div id="heading">
+      <div id="text"><slot name="heading"></slot></div>
+      <paper-icon-button id="expand" 
+        alt$="[[label]]" 
+        aria-controls="collapse" 
+        icon$="[[icon]]"
+        rotated$="[[__rotateIcon]]">
+      </paper-icon-button>
+      <paper-tooltip for="expand">[[tooltip]]</paper-tooltip>
+    </div>
+    <div id="collapse" aria-hidden$="{{!expanded}}" aria-labelledby="heading" aria-live="polite">
+      <div id="content"><slot name="content"></slot></div>
+    </div>
+
   </template>
 
   <script>
     Polymer({
 
       is: 'a11y-collapse',
-      behaviors: [HAXBehaviors.PropertiesBehaviors, MaterializeCSSBehaviors.ColorBehaviors, SchemaBehaviors.Schema],
+      behaviors: [HAXBehaviors.PropertiesBehaviors, SchemaBehaviors.Schema],
+      
+      listeners: { 'expand.tap': '_onTap' },
+
       properties: {
         /**
-         * Title
+         * is disabled?
          */
-        title: {
-          type: String,
+         disabled: {
+          type: Boolean,
+          value: false,
+          reflectToAttribute: true
         },
+        /**
+         * icon when expanded 
+         */
+         expanded: {
+          type: Boolean,
+          value: false,
+          reflectToAttribute: true
+        },
+        /**
+         * icon for the button
+         */
+         icon: {
+          type: String,
+          value: 'icons:expand-more'
+        },
+        /**
+         * icon when expanded 
+         */
+         iconExpanded: {
+          type: String,
+          value: null
+        },
+        /**
+         * label for the button
+         */
+         label: {
+          type: String,
+          value: 'toggle expand/collapse'
+        },
+        /**
+         * tooltip for the button
+         */
+         tooltip: {
+          type: String,
+          value: 'toggle expand/collapse'
+        },
+        /**
+         * If no expanded icon is set, the default icon will rotate when expanded
+         */
+         __rotateIcon: {
+          type: Boolean,
+          computed: '_isRotated(expanded,iconExpanded)'
+        },
+      },
+      /**
+       * If no expanded icon is set, the default icon will rotate when expanded
+       */
+      _isRotated: function(expanded,iconExpanded) {
+        return !expanded && iconExpanded === null;
+      },
+      /**
+       * Handle tap
+       */
+      _onTap: function(e) {
+         if(!this.disabled) {
+           this.toggle();
+           this.fire('a11y-collapse-click',this);
+         }
+      },
+      /**
+       * Toggles based on mode
+       */
+      toggle: function(mode) {
+        this.expanded = mode !== undefined ? mode : !this.expanded;
+        this.$.expand.setAttribute('aria-expanded',''+this.expanded);
+        this.fire('a11y-collapse-toggle',this);
       },
       /**
        * Attached to the DOM, now fire.
@@ -43,40 +177,54 @@ A LRN element
       attached: function() {
         // Establish hax property binding
         let props = {
-          'canScale': true,
+          'canScale': false,
           'canPosition': true,
           'canEditSource': false,
           'gizmo': {
-            'title': 'Sample gizmo',
-            'description': 'The user will be able to see this for selection in a UI.',
-            'icon': 'av:play-circle-filled',
+            'title': 'Single Expand Collapse',
+            'description': 'A single instance of an expand collapse.',
+            'icon': 'view-day',
             'color': 'grey',
-            'groups': ['Video', 'Media'],
-            'handles': [
-              {
-                'type': 'video',
-                'url': 'source'
-              }
-            ],
+            'groups': ['Text'],
             'meta': {
               'author': 'Your organization on github'
             }
           },
           'settings': {
             'quick': [
-              {
-                'property': 'title',
-                'title': 'Title',
-                'description': 'The title of the element',
-                'inputMethod': 'textfield',
-                'icon': 'editor:title',
-              },
             ],
             'configure': [
               {
-                'property': 'title',
-                'title': 'Title',
-                'description': 'The title of the element',
+                'property': 'expanded',
+                'title': 'Expanded',
+                'description': 'Expand by default',
+                'inputMethod': 'boolean',
+              },
+              {
+                'property': 'label',
+                'title': 'Label',
+                'description': 'The label of the toggle expand/collapse button',
+                'inputMethod': 'textfield',
+                'icon': 'editor:title',
+              },
+              {
+                'property': 'tooltip',
+                'title': 'Tooltip',
+                'description': 'The tooltip for the toggle expand/collapse button',
+                'inputMethod': 'textfield',
+                'icon': 'editor:title',
+              },
+              {
+                'property': 'icon',
+                'title': 'Icon',
+                'description': 'The icon for the toggle expand/collapse button',
+                'inputMethod': 'textfield',
+                'icon': 'editor:title',
+              },
+              {
+                'property': 'iconExpanded',
+                'title': 'Expanded Icon',
+                'description': 'Optional: The icon for the toggle expand/collapse button when expanded',
                 'inputMethod': 'textfield',
                 'icon': 'editor:title',
               },
@@ -86,7 +234,7 @@ A LRN element
           }
         };
         this.setHaxProperties(props);
-      },
+      },*/
     });
   </script>
 </dom-module>

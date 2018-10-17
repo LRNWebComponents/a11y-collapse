@@ -21,8 +21,8 @@ An accessible expand collapse.
     label-expanded=""               //The expand/collapse label when expanded. Default is the same as when collapsed.
     tooltip=""                      //The expand/collapse tooltip. Default is "toggle expand/collapse"
     tooltip-expanded=""             //The expand/collapse tooltip when expanded. Default is the same as when collapsed.
-    <p slot="heading">...</p>
-    <div slot="content">...</div>
+    <p slot="heading">...</p>       //Named slot for a heading.
+    ...                             //Unnamed slot for a collapsible content.
   </a11y-collapse>
 
   CSS Variables: 
@@ -90,7 +90,7 @@ An accessible expand collapse.
         @apply --a11y-collapse-content;
       }
       :host #content-inner {
-        transition: all 0.2s ease-in-out 0.2s;
+        transition: all 0.5s ease-in-out;
       }
       :host:not([accordion]) #expand,
       :host[accordion] #heading {
@@ -167,7 +167,7 @@ An accessible expand collapse.
       </div>
     </template>
     <div id="content" aria-hidden$="{{!expanded}}" aria-labelledby="heading" aria-live="polite">
-      <div id="content-inner"><slot name="content"></slot></div>
+      <div id="content-inner"><slot></slot></div>
     </div>
 
   </template>

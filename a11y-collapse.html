@@ -28,6 +28,7 @@ An accessible expand collapse.
   CSS Variables: 
   --a11y-collapse-horizontal-padding               //sets the horizontal padding (left and right) inside the a11y-collapse
   --a11y-collapse-vertical-padding                 //sets the horizontal padding (top and bottom) inside the a11y-collapse
+  --a11y-collapse-border                           //sets the border style. Default is 0px solid black
 
   CSS Mixins: 
   --a11y-collapse: { ... };                        //sets CSS for the a11y-collapse container
@@ -54,14 +55,10 @@ An accessible expand collapse.
     <style>
       :host {
         display: block;
-        border: 1px solid;
+        border: var(--a11y-collapse-border, 1px solid);
         margin: 15px 0;
         transition: all 0.5s;
         @apply --a11y-collapse;
-      }
-      :host[disabled] {
-        opacity: 0.5;
-        @apply --a11y-collapse-disabled;
       }
       :host #heading {
         display: flex;
@@ -79,18 +76,13 @@ An accessible expand collapse.
         transition: transform 0.5s;
         @apply --a11y-collapse-icon;
       }
-      :host #expand[rotated] {
-        transform: rotate(-90deg);
-        @apply --a11y-collapse-icon-rotated;
-      }
       :host #content {
+        max-height: 0;
+        overflow: hidden;
         padding: 0em var(--a11y-collapse-horizontal-padding, 1em);
-        border-top: 0px solid;
+        border-top: 0px solid rgba(255,255,255,0);
         transition: all 0.5s ease-in-out;
         @apply --a11y-collapse-content;
-      }
-      :host #content-inner {
-        transition: all 0.5s ease-in-out;
       }
       :host:not([accordion]) #expand,
       :host[accordion] #heading {
@@ -110,6 +102,10 @@ An accessible expand collapse.
       :host:not([accordion]) #expand:hover {
         @apply --a11y-collapse-icon-focus;
       }
+      :host[disabled] {
+        opacity: 0.5;
+        @apply --a11y-collapse-disabled;
+      }
       :host[disabled]:not([accordion]) #expand,
       :host[disabled][accordion] #heading {
         cursor: not-allowed;
@@ -127,14 +123,18 @@ An accessible expand collapse.
         @apply --a11y-collapse-icon-expanded;
       }
       :host[expanded] #content {
+        max-height: unset;
+        overflow: visibility: hidden;;
         padding: var(--a11y-collapse-vertical-padding, 1em) var(--a11y-collapse-horizontal-padding, 1em);
-        border-top: 1px solid;
+        border-top: var(--a11y-collapse-border, 0px solid);
         @apply --a11y-collapse-content-expanded;
       }
-      :host:not([expanded]) #content,
       :host:not([expanded]) #content-inner {
-        max-height: 0;
         overflow: hidden;
+      }
+      :host #expand[rotated] {
+        transform: rotate(-90deg);
+        @apply --a11y-collapse-icon-rotated;
       }
     </style>
     <template is="dom-if" if="[[!accordion]]">

@@ -11,6 +11,7 @@
     <link rel="import" href="../../iron-demo-helpers/demo-pages-shared-styles.html">
     <link rel="import" href="../../iron-demo-helpers/demo-snippet.html">
     <link rel="import" href="../a11y-collapse.html">
+    <link rel="import" href="../a11y-collapse-group.html">
 
     <style is="custom-style" include="demo-pages-shared-styles">
     </style>
@@ -24,6 +25,62 @@
             <p slot="heading">What rhymes with orange?</p>
             <div slot="content">Nothing rhmyes with orange.</div>
           </a11y-collapse>
+        </template>
+      </demo-snippet>
+
+      <h3>Accordion a11y-collapse demo</h3>
+      <demo-snippet>
+        <template>
+          <a11y-collapse 
+            accordion 
+            icon="arrow-drop-down" 
+            label="toggle info" 
+            tooltip="toggle more information">
+            <p slot="heading">What rhymes with orange?</p>
+            <div slot="content">Nothing rhmyes with orange.</div>
+          </a11y-collapse>
+        </template>
+      </demo-snippet>
+
+      <h3>Basic a11y-collapse-groups demo</h3>
+      <demo-snippet>
+        <template>
+          <a11y-collapse-group radio>
+            <h2 slot="heading">Colors List</h2>
+            <a11y-collapse accordion>
+              <p slot="heading">Purple</p>
+              <div slot="content">Blue and red make purple.</div>
+            </a11y-collapse>
+            <a11y-collapse accordion disabled>
+              <p slot="heading">Green</p>
+              <div slot="content">Blue and yellow make purple.</div>
+            </a11y-collapse>
+            <a11y-collapse accordion>
+              <p slot="heading">Orange</p>
+              <div slot="content">Yellow and red make purple.</div>
+            </a11y-collapse>
+          </a11y-collapse-group>
+        </template>
+      </demo-snippet>
+      
+      <h3>a11y-collapse-groups demo with global options</h3>
+      <demo-snippet>
+        <template>
+          <a11y-collapse-group radio global-options='{"icon": "arrow-drop-down", "tooltip": "show more info", "tooltipExpanded": "show less info"}'>
+            <h2 slot="heading">Colors List</h2>
+            <a11y-collapse>
+              <p slot="heading">Purple</p>
+              <div slot="content">Blue and red make purple.</div>
+            </a11y-collapse>
+            <a11y-collapse disabled>
+              <p slot="heading">Green</p>
+              <div slot="content">Blue and yellow make purple.</div>
+            </a11y-collapse>
+            <a11y-collapse>
+              <p slot="heading">Orange</p>
+              <div slot="content">Yellow and red make purple.</div>
+            </a11y-collapse>
+          </a11y-collapse-group>
         </template>
       </demo-snippet>
     </div>
